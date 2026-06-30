@@ -1,0 +1,49 @@
+name: Lab 13 - LLM Systems Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Check that all exercise files exist
+        run: |
+          echo "Sprawdzam pliki cwiczen..."
+          ls ex1_quantization.py
+          ls ex2_csv_parquet_tools.py
+          ls ex3_mcp_datetime_server.py
+          ls ex3_mcp_client.py
+          ls ex4_mcp_plot_server.py
+          ls ex4_mcp_plot_client.py
+          ls ex5_guardrails_fishing.py
+          echo "Wszystkie pliki sa na miejscu!"
+
+      - name: Check Python syntax of all exercise files
+        run: |
+          echo "Sprawdzam skladnie Python..."
+          uv run python -m py_compile ex1_quantization.py
+          uv run python -m py_compile ex2_csv_parquet_tools.py
+          uv run python -m py_compile ex3_mcp_datetime_server.py
+          uv run python -m py_compile ex3_mcp_client.py
+          uv run python -m py_compile ex4_mcp_plot_server.py
+          uv run python -m py_compile ex4_mcp_plot_client.py
+          echo "Skladnia poprawna!"
