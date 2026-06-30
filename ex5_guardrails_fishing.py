@@ -8,7 +8,7 @@ PRZED URUCHOMIENIEM (jednorazowo, w terminalu):
     1. Zaloz konto na https://hub.guardrailsai.com/
     2. uv run guardrails configure
        (wpisz tam swoj token API z guardrailsai - pokaze sie po zalogowaniu)
-    3. uv run guardrails hub install hub://tryolabs/restrict_to_topic
+    3. uv run guardrails hub install hub://tryolabs/restricttotopic
     4. uv run guardrails hub install hub://guardrails/detect_jailbreak
 
 Uzywa lokalnej Ollamy (model qwen3:1.7b) zamiast OpenAI/vLLM - patrz README.md.
@@ -17,7 +17,8 @@ URUCHOM: uv run python ex5_guardrails_fishing.py
 """
 
 from guardrails import Guard, OnFailAction
-from guardrails.hub import DetectJailbreak, RestrictToTopic
+from guardrails.hub import DetectJailbreak
+from guardrails.hub import RestrictToTopic
 from openai import OpenAI
 
 MODEL_NAME = "qwen3:1.7b"
@@ -29,14 +30,15 @@ SYSTEM_PROMPT = (
 
 
 def build_guard() -> Guard:
-    return Guard().use_many(
-        RestrictToTopic(
+    return (
+        Guard()
+        .use(RestrictToTopic(
             valid_topics=["fishing", "fish", "rivers", "lakes", "fishing gear"],
             disable_classifier=False,
             disable_llm=False,
             on_fail=OnFailAction.EXCEPTION,
-        ),
-        DetectJailbreak(on_fail=OnFailAction.EXCEPTION),
+        ))
+        .use(DetectJailbreak(on_fail=OnFailAction.EXCEPTION))
     )
 
 
